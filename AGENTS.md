@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Project rules
+- All works live in src/data/works.ts and render through the /works/$slug template; add works there, never as new route files. Why: one place to update content.
+- Non-factual content must be flagged (placeholder flag / placeholder tag), never presented as fact. Why: artist requires content integrity.
