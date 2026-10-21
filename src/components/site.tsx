@@ -35,7 +35,7 @@ export function Footer() {
   );
 }
 
-export function Page({ children }: { children: ReactNode }) {
+export function Page({ children, closingLandscape = false }: { children: ReactNode; closingLandscape?: boolean }) {
   return (
     <div className="min-h-screen px-4 md:px-6">
       <a href="#main" className="sr-only focus:not-sr-only">Skip to content</a>
@@ -43,6 +43,11 @@ export function Page({ children }: { children: ReactNode }) {
       <main id="main" className="page-in">{children}</main>
       <Footer />
       <img src={IMG.cutout} alt="" aria-hidden="true" className="flying-cutout" />
+      {closingLandscape && (
+        <figure className="-mx-4 md:-mx-6">
+          <img src={IMG.landscape} alt="3D rendered landscape" className="block w-full h-auto border-0" />
+        </figure>
+      )}
     </div>
   );
 }
@@ -63,7 +68,7 @@ export function Zoomable({ src, alt, className }: { src: string; alt: string; cl
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className="zoom-btn block w-full" aria-label={`Enlarge: ${alt}`}>
-        <img src={src} alt={alt} loading="lazy" className={`w-full h-auto ${className ?? ""}`} />
+        <img src={src} alt={alt} loading="lazy" className={`mx-auto w-auto max-w-full h-auto max-h-[70vh] object-contain ${className ?? ""}`} />
       </button>
       {open && (
         <div role="dialog" aria-modal="true" aria-label={alt} className="lightbox" onClick={() => setOpen(false)}>
@@ -82,14 +87,14 @@ export function Blocks({ blocks, title }: { blocks: Block[]; title: string }) {
         if (b.type === "full")
           return (
             <figure key={i} className="site-grid">
-              <div className="col-span-12 md:col-start-2 md:col-span-10"><Zoomable src={b.src} alt={`${title}, view ${i + 1}`} /></div>
-              {b.caption && <figcaption className="col-span-12 md:col-start-2 text-meta text-muted-foreground mt-2">{b.caption}</figcaption>}
+              <div className="col-span-12 md:col-start-3 md:col-span-8"><Zoomable src={b.src} alt={`${title}, view ${i + 1}`} /></div>
+              {b.caption && <figcaption className="col-span-12 md:col-start-3 text-meta text-muted-foreground mt-2">{b.caption}</figcaption>}
             </figure>
           );
         if (b.type === "offset")
           return (
             <figure key={i} className="site-grid">
-              <div className={`col-span-12 md:col-span-6 ${b.side === "right" ? "md:col-start-7" : "md:col-start-1"}`}>
+              <div className={`col-span-12 md:col-span-5 ${b.side === "right" ? "md:col-start-8" : "md:col-start-1"}`}>
                 <Zoomable src={b.src} alt={`${title}, view ${i + 1}`} />
                 {b.caption && <figcaption className="text-meta text-muted-foreground mt-2">{b.caption}</figcaption>}
               </div>
@@ -99,7 +104,7 @@ export function Blocks({ blocks, title }: { blocks: Block[]; title: string }) {
           return (
             <div key={i} className="site-grid gap-y-6">
               {b.items.map((it, j) => (
-                <figure key={j} className={`col-span-12 md:col-span-5 ${j === 1 ? "md:col-start-8 md:mt-32" : "md:col-start-1"}`}>
+                <figure key={j} className={`col-span-12 md:col-span-4 ${j === 1 ? "md:col-start-9 md:mt-32" : "md:col-start-1"}`}>
                   <Zoomable src={it.src} alt={`${title}, detail ${j + 1}`} />
                 </figure>
               ))}

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Page, Placeholder, Zoomable } from "@/components/site";
-import { ABOUT, CONTACT, IMG, RUNNING_VIDEO, works } from "@/data/works";
+import { Page, Placeholder } from "@/components/site";
+import { ABOUT, CONTACT, RUNNING_VIDEO, works } from "@/data/works";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,20 +18,20 @@ export const Route = createFileRoute("/")({
 
 // Rhythm of positions across the 12-col grid — keeps the index asymmetric but controlled.
 const SLOTS = [
-  "md:col-start-4 md:col-span-6",
+  "md:col-start-5 md:col-span-4",
   "md:col-start-1 md:col-span-4",
-  "md:col-start-8 md:col-span-5 md:-mt-24",
+  "md:col-start-9 md:col-span-4 md:-mt-24",
   "md:col-start-3 md:col-span-4",
   "md:col-start-9 md:col-span-3",
-  "md:col-start-1 md:col-span-6",
-  "md:col-start-7 md:col-span-5 md:mt-40",
+  "md:col-start-1 md:col-span-4",
+  "md:col-start-8 md:col-span-4 md:mt-40",
 ];
 
 function Index() {
   const years = [...new Set(works.map((w) => w.year))].filter((y) => y > 0).sort((a, b) => b - a);
   const undated = works.filter((w) => w.year === 0);
   return (
-    <Page>
+    <Page closingLandscape>
       {years.map((y) => (
         <section key={y} id={`y${y}`} className="mb-32" aria-labelledby={`h${y}`}>
           <h2 id={`h${y}`} className="text-meta text-muted-foreground mb-8">Selection of works from {y}</h2>
@@ -40,7 +40,7 @@ function Index() {
               <li key={w.slug} className={`col-span-12 ${SLOTS[i % SLOTS.length]}`}>
                 <Link to="/works/$slug" params={{ slug: w.slug }} className="work-card block">
                   {w.cover ? (
-                    <img src={w.cover} alt={w.title} loading={i < 2 ? "eager" : "lazy"} className="w-full h-auto" />
+                    <img src={w.cover} alt={w.title} loading={i < 2 ? "eager" : "lazy"} className="mx-auto w-auto max-w-full h-auto max-h-[60vh] object-contain" />
                   ) : (
                     <div className="image-slot aspect-video">moving image</div>
                   )}
@@ -65,7 +65,7 @@ function Index() {
               <li key={w.slug} className={`col-span-12 ${SLOTS[i % SLOTS.length]}`}>
                 <Link to="/works/$slug" params={{ slug: w.slug }} className="work-card block">
                   {w.cover ? (
-                    <img src={w.cover} alt={w.title} loading="lazy" className="w-full h-auto" />
+                    <img src={w.cover} alt={w.title} loading="lazy" className="mx-auto w-auto max-w-full h-auto max-h-[60vh] object-contain" />
                   ) : (
                     <div className="image-slot aspect-video">moving image</div>
                   )}
@@ -98,7 +98,7 @@ function Index() {
         </div>
       </section>
 
-      <section className="site-grid gap-y-10" aria-label="Landscape and running video">
+      <section className="site-grid gap-y-10" aria-label="Running video">
         <div className="col-span-12 md:col-start-2 md:col-span-10 aspect-video">
           <iframe
             src={`https://player.vimeo.com/video/${RUNNING_VIDEO.id}?autoplay=1&muted=1&loop=1&background=1&dnt=1`}
@@ -108,9 +108,6 @@ function Index() {
             loading="lazy"
           />
         </div>
-        <figure className="col-span-12">
-          <Zoomable src={IMG.landscape} alt="3D rendered landscape" />
-        </figure>
       </section>
     </Page>
   );
