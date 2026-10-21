@@ -22,10 +22,9 @@ function Contact() {
       <div className="site-grid gap-y-10">
         <h1 className="col-span-12 md:col-span-4 text-display">Contact</h1>
         <div className="col-span-12 md:col-start-6 md:col-span-6 text-body space-y-2">
-          <p>You can book me for 3D consultation and 3D-related jobs, photography and video editing :)</p>
+          <p>You can book me for a 3D consultation and 3D related jobs, photography and video editing :)</p>
           <p className="pt-4"><a className="link text-nav" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></p>
-          <p><a className="link" href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}>{CONTACT.phone}</a></p>
-          <p><a className="link" href={CONTACT.vimeo} target="_blank" rel="noreferrer">Vimeo</a></p>
+          <p><a className="link" href={CONTACT.instagram} target="_blank" rel="noreferrer">Instagram — {CONTACT.instagramHandle}</a></p>
           <p className="text-muted-foreground pt-4">{CONTACT.base}</p>
         </div>
       </div>

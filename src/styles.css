@@ -169,5 +169,16 @@
 @utility zoom-btn { cursor: zoom-in; &:focus-visible { outline: 2px solid var(--link); outline-offset: 4px; } }
 @utility lightbox { position: fixed; inset: 0; z-index: 50; background: var(--background); display: flex; align-items: center; justify-content: center; padding: 3rem 1.5rem; cursor: zoom-out; }
 @utility page-in { animation: page-in .5s ease both; }
+@utility flying-cutout {
+  position: fixed; z-index: 40; width: clamp(90px, 11vw, 150px); pointer-events: none;
+  animation: fly-drift 42s linear infinite;
+}
+@keyframes fly-drift {
+  0%   { left: -14%; top: 72%; transform: rotate(-6deg); }
+  22%  { left: 30%;  top: 18%; transform: rotate(5deg); }
+  48%  { left: 82%;  top: 55%; transform: rotate(-4deg); }
+  74%  { left: 42%;  top: 84%; transform: rotate(6deg); }
+  100% { left: -14%; top: 72%; transform: rotate(-6deg); }
+}
 @keyframes page-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
