@@ -3,7 +3,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { IMG, works, type Block } from "@/data/works";
 
 export function Header() {
-  const years = [...new Set(works.map((w) => w.year))].sort();
+  const years = [...new Set(works.map((w) => w.year))].filter((y) => y > 0).sort();
   return (
     <header className="site-grid items-start pt-4 pb-8">
       <Link to="/" className="col-span-12 md:col-span-4" aria-label="Elvis Milo Federico — home">
@@ -42,6 +42,7 @@ export function Page({ children }: { children: ReactNode }) {
       <Header />
       <main id="main" className="page-in">{children}</main>
       <Footer />
+      <img src={IMG.cutout} alt="" aria-hidden="true" className="flying-cutout" />
     </div>
   );
 }
@@ -114,7 +115,7 @@ export function Blocks({ blocks, title }: { blocks: Block[]; title: string }) {
           );
         return (
           <div key={i} className="site-grid">
-            <p className="col-span-12 md:col-start-7 md:col-span-5 text-body">
+            <p className="col-span-12 md:col-start-7 md:col-span-5 text-body whitespace-pre-line">
               {b.placeholder && <Placeholder>placeholder</Placeholder>} {b.body}
             </p>
           </div>
