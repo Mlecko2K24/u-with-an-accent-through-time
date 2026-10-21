@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Page, Placeholder } from "@/components/site";
-import { CONTACT, works } from "@/data/works";
+import { Page, Placeholder, Zoomable } from "@/components/site";
+import { ABOUT, CONTACT, IMG, RUNNING_VIDEO, works } from "@/data/works";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,7 +28,8 @@ const SLOTS = [
 ];
 
 function Index() {
-  const years = [...new Set(works.map((w) => w.year))].sort((a, b) => b - a);
+  const years = [...new Set(works.map((w) => w.year))].filter((y) => y > 0).sort((a, b) => b - a);
+  const undated = works.filter((w) => w.year === 0);
   return (
     <Page>
       {years.map((y) => (
