@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { IMG, works, type Block } from "@/data/works";
+import { CONTACT, IMG, works, type Block } from "@/data/works";
 
 export function Header() {
   const years = [...new Set(works.map((w) => w.year))].filter((y) => y > 0).sort();
@@ -30,7 +30,7 @@ export function Footer() {
   return (
     <footer className="site-grid py-12 text-meta text-muted-foreground">
       <span className="col-span-6">Elvis Milo Federico</span>
-      <span className="col-span-6 text-right">Milan / Antwerpen</span>
+      <span className="col-span-6 text-right">{CONTACT.base}</span>
     </footer>
   );
 }
