@@ -13,3 +13,4 @@
 - All works live in src/data/works.ts and render through the /works/$slug template; add works there, never as new route files. Why: one place to update content.
 - Non-factual content must be flagged (placeholder flag / placeholder tag), never presented as fact. Why: artist requires content integrity.
 - Images live as CDN pointers: src/assets/**/*.asset.json, created with the lovable-assets CLI, never commit raw binaries; works.ts resolves them via the u() glob helper keyed on the file basename. Why: keeps the repo light while serving images from the CDN.
+- Page owns the optional closing landscape after Footer; artwork sizing belongs to the index grid and shared Zoomable renderer, not the asset data. Why: preserves a single closing-page layout and consistent artwork presentation.
