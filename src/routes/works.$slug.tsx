@@ -35,7 +35,7 @@ function WorkPage() {
   const idx = works.findIndex((w) => w.slug === work.slug);
   const next = works[(idx + 1) % works.length]!;
   const meta: [string, string | undefined][] = [
-    ["Year", String(work.year)],
+    ["Year", work.year > 0 ? String(work.year) : undefined],
     ["Location", work.location],
     ["Medium", work.medium],
     ["Type", work.kind],

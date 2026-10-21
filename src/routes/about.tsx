@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Page, Placeholder } from "@/components/site";
+import { Page } from "@/components/site";
+import { ABOUT } from "@/data/works";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -21,13 +22,9 @@ function About() {
       <div className="site-grid gap-y-10">
         <h1 className="col-span-12 md:col-span-4 text-display">About me ;)</h1>
         <div className="col-span-12 md:col-start-6 md:col-span-6 text-body space-y-6">
-          <p><Placeholder>draft — replace with your text</Placeholder></p>
-          <p>
-            Elvis Milo Federico is an artist working with site-specific art, installation, sculpture, photography,
-            moving image, material experimentation and digital technologies. His practice looks at the relationships
-            between space, infrastructure, technology, ecology, political power and human intervention in landscapes.
-          </p>
-          <p>Based between Milan and Antwerpen.</p>
+          {ABOUT.split("\n\n").map((p) => (
+            <p key={p.slice(0, 24)}>{p}</p>
+          ))}
           <p className="text-muted-foreground">CV on request.</p>
         </div>
       </div>
