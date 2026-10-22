@@ -41,6 +41,7 @@ export type Work = {
   medium?: string;
   kind?: string;
   cover?: string;
+  video?: string; // Vimeo id; plays silently in the home card when there is no cover
   summary: string;
   placeholder: boolean; // true = description/metadata not yet supplied
   blocks: Block[];
@@ -180,6 +181,7 @@ In collaboration with @research_royalacademyantwerp @royalacademyantwerp @stadsf
     year: 2025,
     kind: "Moving image",
     medium: "3d animation, 3d scan",
+    video: "1237982762",
     summary:
       "An ongoing collaborative project of 3D scans, objects and texts — a growing collection of personal fragments in a shared space.",
     placeholder: false,
@@ -258,6 +260,7 @@ Ghedi Air Base, Italy — 45.4025° N, 10.2766° E`,
     kind: "Moving image",
     medium: "3d animation, 3d scan",
     summary: "You can find me in my atelier 24/7.",
+    video: "1051098125",
     placeholder: false,
     blocks: [
       { type: "vimeo", id: "1051098125", title: "I'm Working as always by Elvis Milo Federico" },
@@ -267,19 +270,24 @@ Ghedi Air Base, Italy — 45.4025° N, 10.2766° E`,
   {
     slug: "parade-mapper",
     title: "Parade Mapper",
-    year: 0, // PLACEHOLDER: year to be confirmed by the artist
+    year: 2024,
+    medium: "Pallets, MDF, plywood, foam, jerrycans, lights and wood",
     cover: u("parade-13-cover.jpg"),
-    summary: "Description to be supplied by the artist.",
-    placeholder: true,
+    summary:
+      "A mobile drawing machine for the Noorderlicht Parade that prints chalk patterns onto the street as it moves.",
+    placeholder: false,
     blocks: page(
       u("parade-13-cover.jpg"),
-      "Description to be supplied by the artist.",
+      `Parade Mapper is a mobile drawing machine developed for the Noorderlicht Parade, organised by the InSitu department. Created in collaboration with Wouter Varnier and Enya Duchateau, the cart prints chalk patterns directly onto the street as it moves through the urban environment, transforming the parade route into a temporary drawing.
+
+The project pays homage to Mass Moving, the Belgian art movement that explored collective action, mobility and the transformation of public space through artistic interventions.
+
+Materials: Pallets, MDF, plywood, foam, jerrycans, lights and wood.`,
       [
         u("parade.jpg"), u("parade-2.jpg"), u("parade-3.jpg"), u("parade-4.jpg"), u("parade-5.jpg"),
         u("parade-6.jpg"), u("parade-7.jpg"), u("parade-8.jpg"), u("parade-9.jpg"), u("parade-10.jpg"),
         u("parade-11.jpg"), u("parade-12.jpg"), u("parade-14.jpg"),
       ],
-      true,
     ),
   },
   {
