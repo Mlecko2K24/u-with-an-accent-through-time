@@ -34,26 +34,12 @@ function WorkPage() {
   const { work } = Route.useLoaderData();
   const idx = works.findIndex((w) => w.slug === work.slug);
   const next = works[(idx + 1) % works.length]!;
-  const meta: [string, string | undefined][] = [
-    ["Year", work.year > 0 ? String(work.year) : undefined],
-    ["Location", work.location],
-    ["Medium", work.medium],
-    ["Type", work.kind],
-  ];
   return (
     <Page>
       <article>
-        <header className="site-grid mb-20 gap-y-6">
-          <h1 className="col-span-12 md:col-span-7 text-display">{work.title}</h1>
-          <dl className="col-span-12 md:col-start-9 md:col-span-4 text-meta grid grid-cols-[6rem_1fr] gap-y-1">
-            {meta.map(([k, v]) => (
-              <div key={k} className="contents">
-                <dt className="text-muted-foreground">{k}</dt>
-                <dd>{v ?? <span className="text-muted-foreground">—  to be supplied</span>}</dd>
-              </div>
-            ))}
-            {work.placeholder && <dd className="col-span-2 mt-2"><Placeholder>information incomplete</Placeholder></dd>}
-          </dl>
+        <header className="site-grid mb-16 md:mb-24">
+          <h1 className="col-span-12 md:col-start-2 md:col-span-10 text-display">{work.title}</h1>
+          {work.placeholder && <p className="col-span-12 md:col-start-2 mt-3"><Placeholder>information incomplete</Placeholder></p>}
         </header>
         <Blocks blocks={work.blocks} title={work.title} />
       </article>

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
-import { CONTACT, IMG, works, type Block } from "@/data/works";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { IMG, works, type Block } from "@/data/works";
 
 export function Header() {
   const years = [...new Set(works.map((w) => w.year))].filter((y) => y > 0).sort();
@@ -16,7 +16,6 @@ export function Header() {
             {i < years.length - 1 ? ", " : ""}
           </span>
         ))}
-        <div className="text-muted-foreground">pdf portfolio — coming soon</div>
       </nav>
       <nav className="col-span-12 md:col-span-4 md:text-right text-nav mt-3 md:mt-0" aria-label="Main">
         <Link to="/about" className="link block">About me ;)</Link>
@@ -26,28 +25,28 @@ export function Header() {
   );
 }
 
+/** Quiet return-to-top; name and base live in Contact, so nothing is repeated here. */
 export function Footer() {
   return (
-    <footer className="site-grid py-12 text-meta text-muted-foreground">
-      <span className="col-span-6">Elvis Milo Federico</span>
-      <span className="col-span-6 text-right">{CONTACT.base}</span>
+    <footer className="py-12 text-meta text-right">
+      <a href="#top" className="link" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+        ↑ top
+      </a>
     </footer>
   );
 }
 
-export function Page({ children, closingLandscape = false }: { children: ReactNode; closingLandscape?: boolean }) {
+export function Page({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen px-4 md:px-6">
+    <div id="top" className="min-h-screen px-4 md:px-6">
       <a href="#main" className="sr-only focus:not-sr-only">Skip to content</a>
       <Header />
       <main id="main" className="page-in">{children}</main>
       <Footer />
       <img src={IMG.cutout} alt="" aria-hidden="true" className="flying-cutout" />
-      {closingLandscape && (
-        <figure className="-mx-4 md:-mx-6">
-          <img src={IMG.landscape} alt="3D rendered landscape" className="block w-full h-auto border-0" />
-        </figure>
-      )}
+      <figure className="-mx-4 md:-mx-6">
+        <img src={IMG.landscape} alt="3D rendered landscape" className="block w-full h-auto border-0" />
+      </figure>
     </div>
   );
 }
@@ -56,76 +55,110 @@ export function Placeholder({ children }: { children: ReactNode }) {
   return <span className="placeholder-tag">{children}</span>;
 }
 
-/** Image that opens a full-screen view on click (keyboard accessible). */
-export function Zoomable({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  const [open, setOpen] = useState(false);
+type Shot = { src: string; alt: string };
+
+/** Image button that opens the shared gallery lightbox. */
+function Zoomable({ shot, onOpen }: { shot: Shot; onOpen: () => void }) {
+  return (
+    <button type="button" onClick={onOpen} className="zoom-btn block w-full" aria-label={`Enlarge: ${shot.alt}`}>
+      <img src={shot.src} alt={shot.alt} loading="lazy" className="img-fade mx-auto w-auto max-w-full h-auto max-h-[75vh] object-contain" />
+    </button>
+  );
+}
+
+/** Full-screen viewer; images vanish into each other (crossfade), never slide. */
+function Lightbox({ shots, index, setIndex, onClose }: { shots: Shot[]; index: number; setIndex: (i: number) => void; onClose: () => void }) {
+  const n = shots.length;
+  const go = (d: number) => setIndex((index + d + n) % n);
+  const touchX = useRef<number | null>(null);
   useEffect(() => {
-    if (!open) return;
-    const k = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const k = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") go(1);
+      if (e.key === "ArrowLeft") go(-1);
+    };
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
-  }, [open]);
+  });
+  const shot = shots[index]!;
   return (
-    <>
-      <button type="button" onClick={() => setOpen(true)} className="zoom-btn block w-full" aria-label={`Enlarge: ${alt}`}>
-        <img src={src} alt={alt} loading="lazy" className={`mx-auto w-auto max-w-full h-auto max-h-[70vh] object-contain ${className ?? ""}`} />
-      </button>
-      {open && (
-        <div role="dialog" aria-modal="true" aria-label={alt} className="lightbox" onClick={() => setOpen(false)}>
-          <img src={src.replace(/\/w\/\d+\//, "/w/2400/")} alt={alt} className="max-h-full max-w-full object-contain" />
-          <button className="absolute top-4 right-6 text-nav link" autoFocus onClick={() => setOpen(false)}>close</button>
-        </div>
+    <div
+      role="dialog" aria-modal="true" aria-label={shot.alt} className="lightbox" onClick={onClose}
+      onTouchStart={(e) => (touchX.current = e.touches[0]!.clientX)}
+      onTouchEnd={(e) => {
+        if (touchX.current === null) return;
+        const dx = e.changedTouches[0]!.clientX - touchX.current;
+        if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+        touchX.current = null;
+      }}
+    >
+      <img key={index} src={shot.src.replace(/\/w\/\d+\//, "/w/2400/")} alt={shot.alt} className="lightbox-vanish max-h-full max-w-full object-contain" />
+      <button className="absolute top-4 right-6 text-nav link" autoFocus onClick={onClose}>close</button>
+      {n > 1 && (
+        <>
+          <button aria-label="Previous image" className="lightbox-arrow left-2 md:left-6" onClick={(e) => { e.stopPropagation(); go(-1); }}>←</button>
+          <button aria-label="Next image" className="lightbox-arrow right-2 md:right-6" onClick={(e) => { e.stopPropagation(); go(1); }}>→</button>
+          <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-meta text-muted-foreground">{index + 1} / {n}</span>
+        </>
       )}
-    </>
+    </div>
   );
 }
 
 export function Blocks({ blocks, title }: { blocks: Block[]; title: string }) {
-  return (
-    <div className="space-y-24 md:space-y-40">
-      {blocks.map((b, i) => {
-        if (b.type === "full")
-          return (
-            <figure key={i} className="site-grid">
-              <div className="col-span-12 md:col-start-3 md:col-span-8"><Zoomable src={b.src} alt={`${title}, view ${i + 1}`} /></div>
-              {b.caption && <figcaption className="col-span-12 md:col-start-3 text-meta text-muted-foreground mt-2">{b.caption}</figcaption>}
-            </figure>
-          );
-        if (b.type === "offset")
-          return (
-            <figure key={i} className="site-grid">
-              <div className={`col-span-12 md:col-span-5 ${b.side === "right" ? "md:col-start-8" : "md:col-start-1"}`}>
-                <Zoomable src={b.src} alt={`${title}, view ${i + 1}`} />
-                {b.caption && <figcaption className="text-meta text-muted-foreground mt-2">{b.caption}</figcaption>}
-              </div>
-            </figure>
-          );
-        if (b.type === "pair")
-          return (
-            <div key={i} className="site-grid gap-y-6">
-              {b.items.map((it, j) => (
-                <figure key={j} className={`col-span-12 md:col-span-4 ${j === 1 ? "md:col-start-9 md:mt-32" : "md:col-start-1"}`}>
-                  <Zoomable src={it.src} alt={`${title}, detail ${j + 1}`} />
-                </figure>
-              ))}
-            </div>
-          );
-        if (b.type === "vimeo")
-          return (
-            <div key={i} className="site-grid">
-              <div className="col-span-12 md:col-start-3 md:col-span-8 aspect-video">
-                <iframe src={`https://player.vimeo.com/video/${b.id}?dnt=1`} title={b.title} className="w-full h-full" allow="fullscreen; picture-in-picture" loading="lazy" />
-              </div>
-            </div>
-          );
-        return (
-          <div key={i} className="site-grid">
-            <p className="col-span-12 md:col-start-7 md:col-span-5 text-body whitespace-pre-line">
-              {b.placeholder && <Placeholder>placeholder</Placeholder>} {b.body}
-            </p>
+  const shots: Shot[] = [];
+  const add = (src: string) => (shots.push({ src, alt: `${title}, view ${shots.length + 1}` }), shots.length - 1);
+  const [open, setOpen] = useState<number | null>(null);
+  const pic = (src: string) => { const i = add(src); return <Zoomable shot={shots[i]!} onOpen={() => setOpen(i)} />; };
+
+  const rendered = blocks.map((b, i) => {
+    if (b.type === "full")
+      return (
+        <figure key={i} className="site-grid">
+          <div className="col-span-12 md:col-start-2 md:col-span-10">{pic(b.src)}</div>
+          {b.caption && <figcaption className="col-span-12 md:col-start-2 text-meta text-muted-foreground mt-2">{b.caption}</figcaption>}
+        </figure>
+      );
+    if (b.type === "offset")
+      return (
+        <figure key={i} className="site-grid">
+          <div className={`col-span-12 md:col-span-6 ${b.side === "right" ? "md:col-start-6" : "md:col-start-2"}`}>
+            {pic(b.src)}
+            {b.caption && <figcaption className="text-meta text-muted-foreground mt-2">{b.caption}</figcaption>}
           </div>
-        );
-      })}
+        </figure>
+      );
+    if (b.type === "pair")
+      return (
+        <div key={i} className="site-grid gap-y-10 items-center">
+          {b.items.map((it, j) => (
+            <figure key={j} className={`col-span-12 md:col-span-5 ${j === 1 ? "md:col-start-7" : "md:col-start-1"}`}>
+              {pic(it.src)}
+            </figure>
+          ))}
+        </div>
+      );
+    if (b.type === "vimeo")
+      return (
+        <div key={i} className="site-grid">
+          <div className="col-span-12 md:col-start-2 md:col-span-10 aspect-video">
+            <iframe src={`https://player.vimeo.com/video/${b.id}?dnt=1`} title={b.title} className="w-full h-full" allow="fullscreen; picture-in-picture" loading="lazy" />
+          </div>
+        </div>
+      );
+    return (
+      <div key={i} className="site-grid">
+        <div className="col-span-12 md:col-start-3 md:col-span-7 text-body whitespace-pre-line max-w-[68ch]">
+          {b.placeholder && <Placeholder>placeholder</Placeholder>} {b.body}
+        </div>
+      </div>
+    );
+  });
+
+  return (
+    <div className="space-y-16 md:space-y-28">
+      {rendered}
+      {open !== null && <Lightbox shots={shots} index={open} setIndex={setOpen} onClose={() => setOpen(null)} />}
     </div>
   );
 }
