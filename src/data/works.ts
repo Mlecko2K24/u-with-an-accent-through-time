@@ -362,4 +362,4 @@ export const CONTACT = {
   base: "Milan — Antwerp — Warsaw",
 };
 
-export const RUNNING_VIDEO = { id: "1051098125", title: "I'm Working as always by Elvis Milo Federico" };
+

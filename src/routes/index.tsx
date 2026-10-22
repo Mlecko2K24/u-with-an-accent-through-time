@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Page, Placeholder } from "@/components/site";
-import { ABOUT, CONTACT, RUNNING_VIDEO, works } from "@/data/works";
+import { ABOUT, CONTACT, works, type Work } from "@/data/works";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,69 +16,58 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// Rhythm of positions across the 12-col grid — keeps the index asymmetric but controlled.
+// Staggered rhythm inside the 10-column works area (two per row, alternating offsets).
 const SLOTS = [
-  "md:col-start-5 md:col-span-4",
   "md:col-start-1 md:col-span-4",
-  "md:col-start-9 md:col-span-4 md:-mt-24",
+  "md:col-start-6 md:col-span-4 md:mt-28",
   "md:col-start-3 md:col-span-4",
-  "md:col-start-9 md:col-span-3",
-  "md:col-start-1 md:col-span-4",
-  "md:col-start-8 md:col-span-4 md:mt-40",
+  "md:col-start-8 md:col-span-3 md:mt-16",
+  "md:col-start-1 md:col-span-3 md:mt-10",
+  "md:col-start-5 md:col-span-5",
 ];
 
-function Index() {
-  const years = [...new Set(works.map((w) => w.year))].filter((y) => y > 0).sort((a, b) => b - a);
-  const undated = works.filter((w) => w.year === 0);
+function Card({ w, i }: { w: Work; i: number }) {
   return (
-    <Page closingLandscape>
+    <Link to="/works/$slug" params={{ slug: w.slug }} className="work-card block w-fit max-w-full mx-auto">
+      {w.cover ? (
+        <img src={w.cover} alt={w.title} loading={i < 2 ? "eager" : "lazy"} className="img-fade block w-auto max-w-full h-auto max-h-[60vh] object-contain" />
+      ) : w.video ? (
+        <div className="aspect-video w-[min(100%,40rem)] md:w-[32rem] max-w-full pointer-events-none">
+          <iframe
+            src={`https://player.vimeo.com/video/${w.video}?autoplay=1&muted=1&loop=1&background=1&controls=0&dnt=1`}
+            title={w.title} className="w-full h-full" allow="autoplay" tabIndex={-1}
+          />
+        </div>
+      ) : (
+        <div className="image-slot aspect-video w-[32rem] max-w-full">moving image</div>
+      )}
+      {/* w-0 min-w-full: caption takes the picture's width and never pushes past its edges */}
+      <div className="w-0 min-w-full mt-2 flex justify-between gap-4 text-meta">
+        <span className="work-title">{w.title}</span>
+        <span className="text-muted-foreground shrink-0">{w.year > 0 ? w.year : <Placeholder>year tbc</Placeholder>}</span>
+      </div>
+    </Link>
+  );
+}
+
+function Index() {
+  const years = [...new Set(works.map((w) => w.year))].sort((a, b) => b - a);
+  return (
+    <Page>
       {years.map((y) => (
-        <section key={y} id={`y${y}`} className="mb-32" aria-labelledby={`h${y}`}>
-          <h2 id={`h${y}`} className="text-meta text-muted-foreground mb-8">Selection of works from {y}</h2>
-          <ul className="site-grid gap-y-20 md:gap-y-28">
+        <section key={y} id={`y${y}`} className="site-grid mb-32 gap-y-8 scroll-mt-6" aria-labelledby={`h${y}`}>
+          <h2 id={`h${y}`} className="col-span-12 md:col-span-2 text-nav md:sticky md:top-6 self-start">
+            {y > 0 ? y : <Placeholder>year to be confirmed</Placeholder>}
+          </h2>
+          <ul className="col-span-12 md:col-span-10 grid grid-cols-1 md:grid-cols-10 gap-x-6 gap-y-20 md:gap-y-24 items-start">
             {works.filter((w) => w.year === y).map((w, i) => (
-              <li key={w.slug} className={`col-span-12 ${SLOTS[i % SLOTS.length]}`}>
-                <Link to="/works/$slug" params={{ slug: w.slug }} className="work-card block">
-                  {w.cover ? (
-                    <img src={w.cover} alt={w.title} loading={i < 2 ? "eager" : "lazy"} className="mx-auto w-auto max-w-full h-auto max-h-[60vh] object-contain" />
-                  ) : (
-                    <div className="image-slot aspect-video">moving image</div>
-                  )}
-                  <div className="mt-2 flex justify-between gap-4 text-meta">
-                    <span className="work-title">{w.title}</span>
-                    <span className="text-muted-foreground">{w.year}</span>
-                  </div>
-                </Link>
+              <li key={w.slug} className={SLOTS[i % SLOTS.length]}>
+                <Card w={w} i={i} />
               </li>
             ))}
           </ul>
         </section>
       ))}
-
-      {undated.length > 0 && (
-        <section className="mb-32" aria-labelledby="undated-h">
-          <h2 id="undated-h" className="text-meta text-muted-foreground mb-8">
-            <Placeholder>year to be confirmed</Placeholder>
-          </h2>
-          <ul className="site-grid gap-y-20 md:gap-y-28">
-            {undated.map((w, i) => (
-              <li key={w.slug} className={`col-span-12 ${SLOTS[i % SLOTS.length]}`}>
-                <Link to="/works/$slug" params={{ slug: w.slug }} className="work-card block">
-                  {w.cover ? (
-                    <img src={w.cover} alt={w.title} loading="lazy" className="mx-auto w-auto max-w-full h-auto max-h-[60vh] object-contain" />
-                  ) : (
-                    <div className="image-slot aspect-video">moving image</div>
-                  )}
-                  <div className="mt-2 flex justify-between gap-4 text-meta">
-                    <span className="work-title">{w.title}</span>
-                    <span className="text-muted-foreground">year tbc</span>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
 
       <section className="site-grid mb-24 gap-y-6" aria-labelledby="about-h">
         <h2 id="about-h" className="col-span-12 md:col-span-3 text-nav">About</h2>
@@ -98,17 +87,6 @@ function Index() {
         </div>
       </section>
 
-      <section className="site-grid gap-y-10" aria-label="Running video">
-        <div className="col-span-12 md:col-start-2 md:col-span-10 aspect-video">
-          <iframe
-            src={`https://player.vimeo.com/video/${RUNNING_VIDEO.id}?autoplay=1&muted=1&loop=1&background=1&dnt=1`}
-            title={RUNNING_VIDEO.title}
-            className="w-full h-full"
-            allow="autoplay; fullscreen; picture-in-picture"
-            loading="lazy"
-          />
-        </div>
-      </section>
     </Page>
   );
 }
